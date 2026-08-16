@@ -116,9 +116,13 @@ const logout = asyncHandler(async (req, res) => {
 // POST /api/auth/refresh
 const refresh = asyncHandler(async (req, res) => {
   const token = req.cookies?.refreshToken;
-  if (!token) throw new ApiError(401, 'No refresh token provided.');
+
+  if (!token) {
+    throw new ApiError(401, 'No refresh token provided.');
+  }
 
   let decoded;
+
   try {
     decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
   } catch (err) {
@@ -126,10 +130,43 @@ const refresh = asyncHandler(async (req, res) => {
   }
 
   const user = await User.findById(decoded.id).select('+refreshToken');
-  if (!user || user.refreshToken !== token) throw new ApiError(401, 'Refresh token mismatch. Please log in again.');
 
+  if (!user || !user.isActive) {
+    throw new ApiError(401, 'Invalid refresh token. Please log in again.');
+  }
+
+  // Make sure the refresh token is the one currently stored
+  if (user.refreshToken !== token) {
+    throw new ApiError(401, 'Refresh token mismatch. Please log in again.');
+  }
+
+  // Generate a new access token
   const accessToken = generateAccessToken(user);
-  res.json(new ApiResponse(200, { accessToken }, 'Token refreshed'));
+
+  // Rotate the refresh token
+  const newRefreshToken = generateRefreshToken(user);
+
+  user.refreshToken = newRefreshToken;
+  await user.save();
+
+  // Replace the old refresh-token cookie
+  res.cookie('refreshToken', newRefreshToken, cookieOptions);
+
+  await logAction({
+    user: user._id,
+    action: 'TOKEN_REFRESHED',
+    entity: 'User',
+    entityId: user._id,
+    ipAddress: req.ip,
+  });
+
+  res.json(
+    new ApiResponse(
+      200,
+      { accessToken },
+      'Token refreshed successfully'
+    )
+  );
 });
 
 // GET /api/auth/me
@@ -191,10 +228,24 @@ const resetPassword = asyncHandler(async (req, res) => {
   });
   if (!user) throw new ApiError(400, 'Reset token is invalid or has expired.');
 
-  user.password = await bcrypt.hash(password, 12);
-  user.passwordResetToken = undefined;
-  user.passwordResetExpires = undefined;
-  await user.save();
+ user.password = await bcrypt.hash(password, 12);
+
+// Invalidate all existing sessions after password reset
+user.refreshToken = undefined;
+
+// Invalidate the password reset token
+user.passwordResetToken = undefined;
+user.passwordResetExpires = undefined;
+
+await user.save();
+
+await logAction({
+  user: user._id,
+  action: 'PASSWORD_RESET',
+  entity: 'User',
+  entityId: user._id,
+  ipAddress: req.ip,
+});
 
   res.json(new ApiResponse(200, null, 'Password reset successfully. Please log in.'));
 });
