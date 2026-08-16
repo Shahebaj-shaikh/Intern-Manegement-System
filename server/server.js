@@ -33,6 +33,7 @@ app.get('/api/health', (req, res) => res.json({ success: true, message: 'IMS API
 
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/interns', require('./routes/intern.routes'));
+app.use('/api/manager-assignments', require('./routes/managerAssignment.routes'));
 app.use('/api/employees', require('./routes/employee.routes'));
 app.use('/api/departments', require('./routes/department.routes'));
 app.use('/api/tasks', require('./routes/task.routes'));

@@ -33,11 +33,30 @@ const getInterns = asyncHandler(async (req, res) => {
 
 // GET /api/interns/:id
 const getInternById = asyncHandler(async (req, res) => {
-  const intern = await Intern.findById(req.params.id).populate('department').populate('teamLeader', 'fullName email');
-  if (!intern) throw new ApiError(404, 'Intern not found');
-  if (req.user.role === 'team_lead' && String(intern.teamLeader?._id) !== String(req.user.profileRef)) {
+  const intern = await Intern.findById(req.params.id)
+    .populate('department')
+    .populate('teamLeader', 'fullName email');
+
+  if (!intern) {
+    throw new ApiError(404, 'Intern not found');
+  }
+
+  // Interns can only view their own profile
+  if (
+    req.user.role === 'intern' &&
+    String(intern._id) !== String(req.user.profileRef)
+  ) {
+    throw new ApiError(403, 'You can only view your own profile.');
+  }
+
+  // Team leaders can only view their assigned interns
+  if (
+    req.user.role === 'team_lead' &&
+    String(intern.teamLeader?._id) !== String(req.user.profileRef)
+  ) {
     throw new ApiError(403, 'You can only view interns assigned to you.');
   }
+
   res.json(new ApiResponse(200, intern));
 });
 
