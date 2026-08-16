@@ -11,6 +11,11 @@ import { ResetPassword } from './pages/auth/ResetPassword';
 import { Dashboard } from './pages/dashboard/Dashboard';
 import { InternList } from './pages/interns/InternList';
 import { InternProfile } from './pages/interns/InternProfile';
+import { CandidateList } from './pages/candidates/CandidateList';
+import { CandidateNew } from './pages/candidates/CandidateNew';
+import { CandidateProfile } from './pages/candidates/CandidateProfile';
+import { ApplicationList } from './pages/applications/ApplicationList';
+import { ApplicationDetail } from './pages/applications/ApplicationDetail';
 import { EmployeeList } from './pages/employees/EmployeeList';
 import { DepartmentList } from './pages/departments/DepartmentList';
 import { TaskBoard } from './pages/tasks/TaskBoard';
@@ -59,6 +64,11 @@ function App() {
           <Route element={<ProtectedRoute roles={['super_admin', 'hr']} />}>
             <Route path="/employees" element={<EmployeeList />} />
             <Route path="/departments" element={<DepartmentList />} />
+            <Route path="/candidates" element={<CandidateList />} />
+            <Route path="/candidates/new" element={<CandidateNew />} />
+            <Route path="/candidates/:id" element={<CandidateProfile />} />
+            <Route path="/applications" element={<ApplicationList />} />
+            <Route path="/applications/:id" element={<ApplicationDetail />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/audit-logs" element={<AuditLogsPage />} />
           </Route>

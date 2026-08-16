@@ -46,6 +46,8 @@ app.use('/api/certificates', require('./routes/certificate.routes'));
 app.use('/api/reports', require('./routes/report.routes'));
 app.use('/api/audit-logs', require('./routes/auditlog.routes'));
 app.use('/api/dashboard', require('./routes/dashboard.routes'));
+app.use('/api/candidates', require('./routes/candidate.routes'));
+app.use('/api/applications', require('./routes/application.routes'));
 
 app.use(notFound);
 app.use(errorHandler);
