@@ -64,10 +64,39 @@ export const leaveApi = {
   review: (id, data) => api.put(`/leaves/${id}/review`, data),
 };
 
-// --- Performance ---
+// --- Performance, Feedback & Evaluation ---
 export const performanceApi = {
-  list: (params) => api.get('/performance', { params }),
-  create: (data) => api.post('/performance', data),
+  // Dashboard
+  getDashboard: (internId) => api.get(`/performance/dashboard${internId ? `/${internId}` : ''}`),
+
+  // Evaluation Templates
+  getTemplates: (params) => api.get('/performance/templates', { params }),
+  getTemplate: (id) => api.get(`/performance/templates/${id}`),
+  createTemplate: (data) => api.post('/performance/templates', data),
+  updateTemplate: (id, data) => api.put(`/performance/templates/${id}`, data),
+  deleteTemplate: (id) => api.delete(`/performance/templates/${id}`),
+
+  // Standalone Categories
+  getCategories: () => api.get('/performance/categories'),
+  createCategory: (data) => api.post('/performance/categories', data),
+  updateCategory: (id, data) => api.put(`/performance/categories/${id}`, data),
+  deleteCategory: (id) => api.delete(`/performance/categories/${id}`),
+
+  // Continuous Feedback
+  getFeedback: (params) => api.get('/performance/feedback', { params }),
+  createFeedback: (data) => api.post('/performance/feedback', data),
+
+  // Mid-Term & Periodic Evaluations
+  getEvaluations: (params) => api.get('/performance/evaluations', { params }),
+  getEvaluation: (id) => api.get(`/performance/evaluations/${id}`),
+  createEvaluation: (data) => api.post('/performance/evaluations', data),
+  updateEvaluation: (id, data) => api.put(`/performance/evaluations/${id}`, data),
+  finalizeEvaluation: (id) => api.put(`/performance/evaluations/${id}/finalize`),
+  getEvaluationHistory: (id) => api.get(`/performance/evaluations/${id}/history`),
+
+  // Backwards compatibility
+  list: (params) => api.get('/performance/evaluations', { params }),
+  create: (data) => api.post('/performance/evaluations', data),
 };
 
 // --- Notifications ---
@@ -94,18 +123,13 @@ export const documentApi = {
 // --- Certificates ---
 export const certificateApi = {
   list: () => api.get('/certificates'),
-my-new-feature
   generate: (internId, data) => api.post(`/certificates/${internId}/generate`, data),
-
-  generate: (internId, data) =>
-    api.post(`/certificates/${internId}/generate`, data),
   verifyPublic: (certificateId) => api.get(`/certificates/verify/${certificateId}`),
 };
 
 // --- Completion ---
 export const completionApi = {
   complete: (internId) => api.post(`/completion/${internId}/complete`),
-main
 };
 
 // --- Reports ---

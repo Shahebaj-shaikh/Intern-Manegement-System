@@ -23,6 +23,9 @@ const Task = require('../models/Task');
 const Attendance = require('../models/Attendance');
 const Leave = require('../models/Leave');
 const Performance = require('../models/Performance');
+const EvaluationTemplate = require('../models/EvaluationTemplate');
+const EvaluationCategory = require('../models/EvaluationCategory');
+const Feedback = require('../models/Feedback');
 const Announcement = require('../models/Announcement');
 const Notification = require('../models/Notification');
 
@@ -35,6 +38,7 @@ const run = async () => {
   await Promise.all([
     User.deleteMany({}), Employee.deleteMany({}), Intern.deleteMany({}), Department.deleteMany({}),
     Task.deleteMany({}), Attendance.deleteMany({}), Leave.deleteMany({}), Performance.deleteMany({}),
+    EvaluationTemplate.deleteMany({}), EvaluationCategory.deleteMany({}), Feedback.deleteMany({}),
     Announcement.deleteMany({}), Notification.deleteMany({}),
   ]);
 
@@ -61,6 +65,27 @@ const run = async () => {
   const tlUser2 = await User.create({ email: 'weblead@ims.com', password: hash('Lead@123'), role: 'team_lead' });
   const tl2 = await Employee.create({ user: tlUser2._id, email: 'weblead@ims.com', fullName: 'Ananya Iyer', designation: 'Lead Web Developer', department: deptMap['Web Development'] });
   tlUser2.profileRef = tl2._id; tlUser2.profileModel = 'Employee'; await tlUser2.save();
+
+  // --- Evaluation Templates & Categories ---
+  const defaultCategories = [
+    { name: 'Technical Skills', description: 'Proficiency in required programming languages and frameworks', minScore: 1, maxScore: 10, weight: 1.5, order: 1 },
+    { name: 'Communication', description: 'Clarity in written and verbal communication, team interaction', minScore: 1, maxScore: 10, weight: 1, order: 2 },
+    { name: 'Problem Solving', description: 'Ability to debug, analyze issues, and propose sound solutions', minScore: 1, maxScore: 10, weight: 1.2, order: 3 },
+    { name: 'Discipline & Punctuality', description: 'Adherence to work hours, meetings, and workplace decorum', minScore: 1, maxScore: 10, weight: 0.8, order: 4 },
+    { name: 'Task Completion', description: 'Timeliness and quality of submitted deliverables', minScore: 1, maxScore: 10, weight: 1.3, order: 5 },
+    { name: 'Learning Ability', description: 'Speed of picking up new technologies and incorporating feedback', minScore: 1, maxScore: 10, weight: 1.1, order: 6 },
+    { name: 'Professionalism', description: 'Work ethic, accountability, and collaboration with colleagues', minScore: 1, maxScore: 10, weight: 1, order: 7 },
+  ];
+
+  await EvaluationCategory.insertMany(defaultCategories);
+
+  const standardTemplate = await EvaluationTemplate.create({
+    name: 'Standard Internship Mid-Term Evaluation',
+    description: 'Comprehensive rubric covering technical, soft skills, discipline, and deliverable quality.',
+    isDefault: true,
+    createdBy: adminUser._id,
+    categories: defaultCategories,
+  });
 
   // --- Interns ---
   const internSeeds = [
@@ -121,12 +146,68 @@ const run = async () => {
   await Leave.create({ intern: interns[0]._id, leaveType: 'sick', startDate: new Date('2026-08-20'), endDate: new Date('2026-08-21'), reason: 'Fever', status: 'pending' });
   await Leave.create({ intern: interns[1]._id, leaveType: 'casual', startDate: new Date('2026-08-10'), endDate: new Date('2026-08-10'), reason: 'Personal work', status: 'approved', reviewedBy: tl2._id });
 
-  // --- Performance ---
+  // --- Feedback ---
+  await Feedback.create({
+    intern: interns[0]._id,
+    author: tlUser1._id,
+    category: 'Technical',
+    strengths: 'Quick grasp of backend API design and MongoDB schemas.',
+    weaknesses: 'Needs deeper attention to edge cases in error handling.',
+    improvementSuggestions: 'Write more unit tests covering boundary conditions.',
+    comments: 'Great progress in the first month. Demonstrates high enthusiasm and quick learning.',
+  });
+
+  await Feedback.create({
+    intern: interns[0]._id,
+    author: hrUser._id,
+    category: 'General',
+    strengths: 'Very punctual and active participant in team standups.',
+    weaknesses: 'None observed.',
+    improvementSuggestions: 'Continue maintaining good communication with mentors.',
+    comments: 'Smooth onboarding and high engagement.',
+  });
+
+  // --- Mid-Term Evaluations ---
+  const sampleScores = [
+    { categoryName: 'Technical Skills', score: 8.5, maxScore: 10, weight: 1.5, notes: 'Solid understanding of Node/Express' },
+    { categoryName: 'Communication', score: 8.0, maxScore: 10, weight: 1, notes: 'Clear daily updates' },
+    { categoryName: 'Problem Solving', score: 8.5, maxScore: 10, weight: 1.2, notes: 'Good analytical breakdown' },
+    { categoryName: 'Discipline & Punctuality', score: 9.0, maxScore: 10, weight: 0.8, notes: 'Always on time' },
+    { categoryName: 'Task Completion', score: 7.5, maxScore: 10, weight: 1.3, notes: 'Delivers on schedule with minor revisions' },
+    { categoryName: 'Learning Ability', score: 9.0, maxScore: 10, weight: 1.1, notes: 'Learns rapidly' },
+    { categoryName: 'Professionalism', score: 8.5, maxScore: 10, weight: 1, notes: 'Courteous and team-oriented' },
+  ];
+
   await Performance.create({
-    intern: interns[0]._id, evaluatedBy: tl1._id,
-    ratings: { technicalSkills: 8, taskCompletion: 7, problemSolving: 8, communication: 7, teamwork: 9, punctuality: 8, learningAbility: 9, professionalism: 8 },
-    feedback: 'Strong technical performance, great attitude towards learning.',
-    evaluationPeriod: 'Month 1',
+    intern: interns[0]._id,
+    evaluator: tlUser1._id,
+    evaluatedBy: tl1._id,
+    template: standardTemplate._id,
+    evaluationPeriod: 'Mid-Term',
+    categoryScores: sampleScores,
+    strengths: 'Strong analytical skills, fast learner, and great team player.',
+    weaknesses: 'Can improve on test coverage and code documentation.',
+    improvementPlan: 'Assign dedicated tasks focusing on automated testing and architecture documentation.',
+    overallRecommendation: 'excellent',
+    status: 'finalized',
+    finalizedAt: new Date(),
+    finalizedBy: hrUser._id,
+    version: 1,
+    versionHistory: [
+      {
+        version: 1,
+        modifiedBy: tlUser1._id,
+        modifiedAt: new Date(),
+        status: 'finalized',
+        overallScore: 8.4,
+        categoryScores: sampleScores,
+        strengths: 'Strong analytical skills, fast learner, and great team player.',
+        weaknesses: 'Can improve on test coverage and code documentation.',
+        improvementPlan: 'Assign dedicated tasks focusing on automated testing and architecture documentation.',
+        overallRecommendation: 'excellent',
+        changeSummary: 'Finalized mid-term evaluation',
+      },
+    ],
   });
 
   // --- Announcements ---
