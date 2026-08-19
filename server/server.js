@@ -37,6 +37,7 @@ app.use('/api/manager-assignments', require('./routes/managerAssignment.routes')
 app.use('/api/employees', require('./routes/employee.routes'));
 app.use('/api/departments', require('./routes/department.routes'));
 app.use('/api/tasks', require('./routes/task.routes'));
+app.use('/api/worklogs', require('./routes/workLog.routes'));
 app.use('/api/attendance', require('./routes/attendance.routes'));
 app.use('/api/leaves', require('./routes/leave.routes'));
 app.use('/api/performance', require('./routes/performance.routes'));

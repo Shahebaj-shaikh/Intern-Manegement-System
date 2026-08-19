@@ -8,7 +8,7 @@ import { Button } from '../../components/Button';
 import { taskApi, internApi } from '../../api/endpoints';
 import { useToast } from '../../context/ToastContext';
 
-const empty = { title: '', description: '', assignedTo: '', priority: 'medium', startDate: '', deadline: '' };
+const empty = { title: '', description: '', assignedTo: '', priority: 'medium', startDate: '', deadline: '', estimatedHours: '' };
 
 export const TaskFormModal = ({ open, onClose, onSaved }) => {
   const { showToast } = useToast();
@@ -25,7 +25,10 @@ export const TaskFormModal = ({ open, onClose, onSaved }) => {
     setError('');
     setLoading(true);
     try {
-      await taskApi.create(form);
+      await taskApi.create({
+        ...form,
+        estimatedHours: form.estimatedHours === '' ? 0 : Number(form.estimatedHours),
+      });
       showToast('Task created and assigned');
       setForm(empty);
       onSaved();
@@ -48,6 +51,15 @@ export const TaskFormModal = ({ open, onClose, onSaved }) => {
           <Input label="Start date" type="date" value={form.startDate} onChange={update('startDate')} />
           <Input label="Deadline" type="date" required value={form.deadline} onChange={update('deadline')} />
         </div>
+        <Input
+          label="Estimated hours"
+          type="number"
+          min="0"
+          step="0.5"
+          placeholder="8"
+          value={form.estimatedHours}
+          onChange={update('estimatedHours')}
+        />
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
           <Button type="submit" loading={loading}>Create task</Button>
