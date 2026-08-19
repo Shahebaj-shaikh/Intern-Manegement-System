@@ -49,6 +49,16 @@ export const taskApi = {
   review: (taskId, submissionId, data) => api.put(`/tasks/${taskId}/submissions/${submissionId}/review`, data),
 };
 
+// --- Work Logs ---
+export const workLogApi = {
+  list: (params) => api.get('/worklogs', { params }),
+  get: (id) => api.get(`/worklogs/${id}`),
+  create: (data) => api.post('/worklogs', data),
+  update: (id, data) => api.put(`/worklogs/${id}`, data),
+  review: (id, data) => api.put(`/worklogs/${id}/review`, data),
+  remove: (id) => api.delete(`/worklogs/${id}`),
+};
+
 // --- Attendance ---
 export const attendanceApi = {
   checkIn: () => api.post('/attendance/check-in'),

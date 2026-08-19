@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard, Users, Briefcase, Building2, ListChecks, CalendarCheck,
+  LayoutDashboard, Users, Briefcase, Building2, ListChecks, ClipboardList, CalendarCheck,
   CalendarClock, Award, Bell, Megaphone, FileText, ScrollText, BarChart3, History, User,
 } from 'lucide-react';
 
@@ -10,6 +10,7 @@ export const navByRole = {
     { to: '/employees', label: 'Employees', icon: Briefcase },
     { to: '/departments', label: 'Departments', icon: Building2 },
     { to: '/tasks', label: 'Tasks', icon: ListChecks },
+    { to: '/worklogs', label: 'Work Logs', icon: ClipboardList },
     { to: '/attendance', label: 'Attendance', icon: CalendarCheck },
     { to: '/leaves', label: 'Leaves', icon: CalendarClock },
     { to: '/performance', label: 'Performance', icon: Award },
@@ -25,6 +26,7 @@ export const navByRole = {
     { to: '/employees', label: 'Employees', icon: Briefcase },
     { to: '/departments', label: 'Departments', icon: Building2 },
     { to: '/tasks', label: 'Tasks', icon: ListChecks },
+    { to: '/worklogs', label: 'Work Logs', icon: ClipboardList },
     { to: '/attendance', label: 'Attendance', icon: CalendarCheck },
     { to: '/leaves', label: 'Leaves', icon: CalendarClock },
     { to: '/performance', label: 'Performance', icon: Award },
@@ -38,6 +40,7 @@ export const navByRole = {
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/interns', label: 'My Interns', icon: Users },
     { to: '/tasks', label: 'Tasks', icon: ListChecks },
+    { to: '/worklogs', label: 'Work Logs', icon: ClipboardList },
     { to: '/attendance', label: 'Attendance', icon: CalendarCheck },
     { to: '/leaves', label: 'Leave Requests', icon: CalendarClock },
     { to: '/performance', label: 'Performance', icon: Award },
@@ -46,6 +49,7 @@ export const navByRole = {
   intern: [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/tasks', label: 'My Tasks', icon: ListChecks },
+    { to: '/worklogs', label: 'Work Logs', icon: ClipboardList },
     { to: '/attendance', label: 'Attendance', icon: CalendarCheck },
     { to: '/leaves', label: 'Leaves', icon: CalendarClock },
     { to: '/performance', label: 'My Performance', icon: Award },

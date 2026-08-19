@@ -15,6 +15,8 @@ const taskSchema = new mongoose.Schema(
     },
     startDate: Date,
     deadline: { type: Date, required: true },
+    estimatedHours: { type: Number, default: 0, min: 0 },
+    actualHours: { type: Number, default: 0, min: 0 },
     attachments: [String],
     comments: [
       {

@@ -16,7 +16,9 @@ import { EmployeeList } from './pages/employees/EmployeeList';
 import { DepartmentList } from './pages/departments/DepartmentList';
 import { TaskBoard } from './pages/tasks/TaskBoard';
 import { TaskDetail } from './pages/tasks/TaskDetail';
-import {AttendancePage}  from './pages/attendance/AttendancePage';
+import { WorkLogsPage } from './pages/worklogs/WorkLogsPage';
+import { WorkLogDetail } from './pages/worklogs/WorkLogDetail';
+import { AttendancePage } from './pages/attendance/AttendancePage';
 import { LeavesPage } from './pages/leaves/LeavesPage';
 import { PerformancePage } from './pages/performance/PerformancePage';
 import { AnnouncementsPage } from './pages/announcements/AnnouncementsPage';
@@ -51,6 +53,8 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/tasks" element={<TaskBoard />} />
           <Route path="/tasks/:id" element={<TaskDetail />} />
+          <Route path="/worklogs" element={<WorkLogsPage />} />
+          <Route path="/worklogs/:id" element={<WorkLogDetail />} />
           <Route path="/attendance" element={<AttendancePage />} />
           <Route path="/leaves" element={<LeavesPage />} />
           <Route path="/performance" element={<PerformancePage />} />
