@@ -162,3 +162,22 @@ export const dashboardApi = {
   teamLead: () => api.get('/dashboard/team-lead'),
   intern: () => api.get('/dashboard/intern'),
 };
+
+// --- Candidates ---
+export const candidateApi = {
+  list: (params) => api.get('/candidates', { params }),
+  get: (id) => api.get(`/candidates/${id}`),
+  create: (formData) => api.post('/candidates', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  update: (id, formData) => api.put(`/candidates/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  archive: (id) => api.delete(`/candidates/${id}`),
+  restore: (id) => api.put(`/candidates/${id}/restore`),
+};
+
+// --- Applications ---
+export const applicationApi = {
+  list: (params) => api.get('/applications', { params }),
+  get: (id) => api.get(`/applications/${id}`),
+  create: (data) => api.post('/applications', data),
+  update: (id, data) => api.put(`/applications/${id}`, data),
+  updateStatus: (id, data) => api.put(`/applications/${id}/status`, data),
+};

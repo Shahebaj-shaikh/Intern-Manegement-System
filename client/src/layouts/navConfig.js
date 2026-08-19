@@ -1,6 +1,7 @@
 import {
   LayoutDashboard, Users, Briefcase, Building2, ListChecks, ClipboardList, CalendarCheck,
   CalendarClock, Award, Bell, Megaphone, FileText, ScrollText, BarChart3, History, User,
+  UserPlus, ClipboardList,
 } from 'lucide-react';
 
 export const navByRole = {
@@ -9,6 +10,8 @@ export const navByRole = {
     { to: '/interns', label: 'Interns', icon: Users },
     { to: '/employees', label: 'Employees', icon: Briefcase },
     { to: '/departments', label: 'Departments', icon: Building2 },
+    { to: '/candidates', label: 'Candidates', icon: UserPlus },
+    { to: '/applications', label: 'Applications', icon: ClipboardList },
     { to: '/tasks', label: 'Tasks', icon: ListChecks },
     { to: '/worklogs', label: 'Work Logs', icon: ClipboardList },
     { to: '/attendance', label: 'Attendance', icon: CalendarCheck },
@@ -25,6 +28,8 @@ export const navByRole = {
     { to: '/interns', label: 'Interns', icon: Users },
     { to: '/employees', label: 'Employees', icon: Briefcase },
     { to: '/departments', label: 'Departments', icon: Building2 },
+    { to: '/candidates', label: 'Candidates', icon: UserPlus },
+    { to: '/applications', label: 'Applications', icon: ClipboardList },
     { to: '/tasks', label: 'Tasks', icon: ListChecks },
     { to: '/worklogs', label: 'Work Logs', icon: ClipboardList },
     { to: '/attendance', label: 'Attendance', icon: CalendarCheck },
