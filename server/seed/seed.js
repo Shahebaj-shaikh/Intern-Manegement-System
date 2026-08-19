@@ -1,4 +1,17 @@
-require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+// Ensure the MONGODB_URI from server/.env is used even if an environment variable is already set
+const fs = require('fs');
+try {
+  const envPath = path.join(__dirname, '..', '.env');
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    const m = envContent.match(/^MONGODB_URI=(.*)$/m);
+    if (m && m[1]) process.env.MONGODB_URI = m[1].trim();
+  }
+} catch (e) {
+  // ignore and rely on dotenv
+}
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
