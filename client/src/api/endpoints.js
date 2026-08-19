@@ -135,6 +135,12 @@ export const certificateApi = {
   list: () => api.get('/certificates'),
   generate: (internId, data) =>
     api.post(`/certificates/${internId}/generate`, data),
+  verifyPublic: (certificateId) => api.get(`/certificates/verify/${certificateId}`),
+};
+
+// --- Completion ---
+export const completionApi = {
+  complete: (internId) => api.post(`/completion/${internId}/complete`),
 };
 
 // --- Reports ---

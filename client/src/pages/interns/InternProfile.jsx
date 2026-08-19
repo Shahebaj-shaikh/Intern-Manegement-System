@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Pencil, Trash2, Mail, Phone, GraduationCap, Building2, UserCog } from 'lucide-react';
-import { internApi, certificateApi } from '../../api/endpoints';
+import { internApi, certificateApi, completionApi } from '../../api/endpoints';
 import { Card } from '../../components/Card';
 import { Badge } from '../../components/Badge';
 import { Button } from '../../components/Button';
@@ -21,6 +21,7 @@ export const InternProfile = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [genLoading, setGenLoading] = useState(false);
+  const [completeLoading, setCompleteLoading] = useState(false);
 
   const { data: intern, isLoading, isError, refetch } = useQuery({
     queryKey: ['intern', id],
@@ -72,6 +73,20 @@ export const InternProfile = () => {
           </div>
           {canManage && (
             <div className="flex gap-2">
+              {intern.status !== 'completed' && (
+                <Button variant="primary" onClick={async () => {
+                  setCompleteLoading(true);
+                  try {
+                    await completionApi.complete(id);
+                    showToast('Intern marked as completed');
+                    refetch();
+                  } catch (err) {
+                    showToast(err.response?.data?.message || 'Could not mark completion', 'error');
+                  } finally {
+                    setCompleteLoading(false);
+                  }
+                }} loading={completeLoading}>Mark as Complete</Button>
+              )}
               {intern.status === 'completed' && (
                 <Button variant="secondary" onClick={handleGenerateCertificate} loading={genLoading}>Generate Certificate</Button>
               )}
