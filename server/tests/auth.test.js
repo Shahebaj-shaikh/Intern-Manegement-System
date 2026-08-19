@@ -12,10 +12,10 @@ jest.setTimeout(30000);
 const app = require('../server');
 const User = require('../models/User');
 
+const { connectTestDb, disconnectTestDb } = require('./setupDb');
+
 beforeAll(async () => {
-  if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(process.env.MONGODB_URI);
-  }
+  await connectTestDb();
 
   await User.deleteMany({
     email: {
@@ -50,7 +50,7 @@ afterAll(async () => {
     },
   });
 
-  await mongoose.disconnect();
+  await disconnectTestDb();
 });
 
 describe('Auth', () => {

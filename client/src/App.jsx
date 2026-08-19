@@ -7,6 +7,7 @@ import { Login } from './pages/auth/Login';
 import { SignUp } from './pages/auth/SignUp';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
 import { ResetPassword } from './pages/auth/ResetPassword';
+import { VerifyCertificate } from './pages/certificates/VerifyCertificate';
 
 import { Dashboard } from './pages/dashboard/Dashboard';
 import { InternList } from './pages/interns/InternList';
@@ -27,6 +28,9 @@ import { ReportsPage } from './pages/reports/ReportsPage';
 import { AuditLogsPage } from './pages/auditlogs/AuditLogsPage';
 import { ProfilePage } from './pages/profile/ProfilePage';
 import { NotFound } from './pages/misc/NotFound';
+import {AdminAttendancePage} from './pages/attendance/AdminAttendancePage';
+
+
 
 function App() {
   return (
@@ -38,6 +42,10 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Route>
+
+      {/* Public certificate verification */}
+      <Route path="/certificates/verify" element={<VerifyCertificate />} />
+
 
       {/* Protected app routes - any authenticated role */}
       <Route element={<ProtectedRoute />}>
@@ -57,6 +65,7 @@ function App() {
           <Route element={<ProtectedRoute roles={['super_admin', 'hr', 'team_lead']} />}>
             <Route path="/interns" element={<InternList />} />
             <Route path="/interns/:id" element={<InternProfile />} />
+            <Route path="/admin/attendance" element={<AdminAttendancePage />} />
           </Route>
 
           {/* HR / Admin only */}

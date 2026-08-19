@@ -32,10 +32,10 @@ const testInternEmails = [
   'unauthorized@ims.com',
 ];
 
+const { connectTestDb, disconnectTestDb } = require('./setupDb');
+
 beforeAll(async () => {
-  if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(process.env.MONGODB_URI);
-  }
+  await connectTestDb();
 
   // Clean test data before running tests
   await User.deleteMany({
@@ -142,7 +142,7 @@ afterAll(async () => {
     email: { $in: testInternEmails },
   });
 
-  await mongoose.disconnect();
+  await disconnectTestDb();
 });
 
 describe('Intern CRUD', () => {

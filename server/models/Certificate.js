@@ -4,6 +4,7 @@ const certificateSchema = new mongoose.Schema(
   {
     intern: { type: mongoose.Schema.Types.ObjectId, ref: 'Intern', required: true },
     certificateId: { type: String, required: true, unique: true },
+    status: { type: String, enum: ['issued', 'revoked'], default: 'issued' },
     role: String,
     durationText: String,
     issuedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee' },
