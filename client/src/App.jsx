@@ -15,7 +15,7 @@ import { EmployeeList } from './pages/employees/EmployeeList';
 import { DepartmentList } from './pages/departments/DepartmentList';
 import { TaskBoard } from './pages/tasks/TaskBoard';
 import { TaskDetail } from './pages/tasks/TaskDetail';
-import { AttendancePage } from './pages/attendance/AttendancePage';
+import {AttendancePage}  from './pages/attendance/AttendancePage';
 import { LeavesPage } from './pages/leaves/LeavesPage';
 import { PerformancePage } from './pages/performance/PerformancePage';
 import { AnnouncementsPage } from './pages/announcements/AnnouncementsPage';
@@ -25,6 +25,9 @@ import { ReportsPage } from './pages/reports/ReportsPage';
 import { AuditLogsPage } from './pages/auditlogs/AuditLogsPage';
 import { ProfilePage } from './pages/profile/ProfilePage';
 import { NotFound } from './pages/misc/NotFound';
+import {AdminAttendancePage} from './pages/attendance/AdminAttendancePage';
+
+
 
 function App() {
   return (
@@ -53,6 +56,7 @@ function App() {
           <Route element={<ProtectedRoute roles={['super_admin', 'hr', 'team_lead']} />}>
             <Route path="/interns" element={<InternList />} />
             <Route path="/interns/:id" element={<InternProfile />} />
+            <Route path="/admin/attendance" element={<AdminAttendancePage />} />
           </Route>
 
           {/* HR / Admin only */}

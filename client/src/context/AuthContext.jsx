@@ -28,11 +28,24 @@ export const AuthProvider = ({ children }) => {
     loadUser();
   }, [loadUser]);
 
-  const login = async (email, password) => {
-    const { data } = await authApi.login({ email, password });
-    localStorage.setItem('accessToken', data.data.accessToken);
-    setUser(data.data.user);
-    return data.data.user;
+  // Supports both login({ email, password }) AND login(email, password)
+  const login = async (credentialsOrEmail, passwordParam) => {
+    let credentials;
+    
+    if (typeof credentialsOrEmail === 'object' && credentialsOrEmail !== null) {
+      credentials = credentialsOrEmail;
+    } else {
+      credentials = { email: credentialsOrEmail, password: passwordParam };
+    }
+
+    const { data } = await authApi.login(credentials);
+    
+    // Unwraps response based on your backend's ApiResponse structure
+    const payload = data.data || data;
+    
+    localStorage.setItem('accessToken', payload.accessToken);
+    setUser(payload.user);
+    return payload.user;
   };
 
   const logout = async () => {
