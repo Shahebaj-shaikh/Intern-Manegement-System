@@ -1,0 +1,111 @@
+Feature: Certificates, Completion & Alumni
+Branch: feature/certificates-alumni
+
+Summary
+-------
+This feature implements the final stage of the internship lifecycle:
+- Completion eligibility checks (configurable)
+- Mark intern as completed
+- Preserve an alumni snapshot
+- Generate PDF certificates with unique IDs
+- Public verification endpoint for certificates
+
+What was added (backend)
+-------------------------
+- Models:
+  - `Certificate` (added `status` field: `issued|revoked`)
+  - `Completion` (records completion events)
+  - `Alumni` (stores a historical snapshot of the intern and related records)
+  - `Setting` (store configurable rules like `completionRules`)
+
+- Controllers / Routes:
+  - `POST /api/completion/:internId/complete`
+    - Accessible by: `hr`, `super_admin` (via RBAC)
+    - Checks configurable rules (final evaluation present, required documents, internship end date)
+    - Marks the `Intern.status` as `completed`, creates a `Completion` record, and creates an `Alumni` snapshot containing intern data, performance, certificates, and document pointers.
+
+  - `POST /api/certificates/:internId/generate`
+    - Accessible by: `hr`, `super_admin`
+    - Generates a PDF certificate, assigns a unique `certificateId` (format `IMS-CERT-XXXXXX`), stores the file under `/uploads`, and creates a `Certificate` record.
+
+  - `GET /api/certificates` (protected)
+    - Lists certificates (interns see their own)
+
+  - `GET /api/certificates/verify/:certificateId` (public)
+    - Anyone can verify a certificate by ID.
+    - Returns only minimal public fields: `{ certificateId, internName, role, durationText, issueDate, status }`.
+
+  - `GET /api/alumni` (protected; `hr`, `super_admin`, `team_lead`)
+    - Lists alumni snapshots.
+
+Test and verification
+---------------------
+- Integration test script: `server/scripts/test-certificates.js`
+  - Runs the following end-to-end checks against a running API server:
+    1. Login as HR (`hr@ims.com / Hr@12345`).
+    2. Find an intern (e.g., `intern5@ims.com`).
+    3. Call `POST /api/certificates/:internId/generate` to generate a certificate.
+    4. Call public `GET /api/certificates/verify/:certificateId` to verify the certificate.
+    5. Confirm certificate appears in the protected `GET /api/certificates` list.
+
+  - Run it from the project root with a running server:
+
+    cd server
+    node scripts/test-certificates.js
+
+How to check in the UI (quick options)
+-------------------------------------
+There is currently no dedicated client UI button for "Mark as Complete" or "Generate Certificate" in the React app. You can still verify and exercise the feature via the UI/browser as follows:
+
+Option A — Use the running frontend + browser console (fast manual flow):
+1. Open the app at `http://localhost:5173`.
+2. Login as HR: `hr@ims.com / Hr@12345`.
+3. In the browser DevTools Console, run the following (replace `<INTERN_ID>`):
+
+  // Get access token from localStorage
+  const token = localStorage.getItem('accessToken');
+
+  // Mark completion (HR only)
+  fetch(`/api/completion/<INTERN_ID>/complete`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } }).then(r=>r.json()).then(console.log).catch(console.error);
+
+  // Generate certificate
+  fetch(`/api/certificates/<INTERN_ID>/generate`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ role: 'Intern', authorizedBy: 'HR Team' }) }).then(r=>r.json()).then(console.log).catch(console.error);
+
+  // Publicly verify a certificate (no auth required)
+  fetch(`/api/certificates/verify/IMS-CERT-XXXXXX`).then(r=>r.json()).then(console.log).catch(console.error);
+
+Option B — Use Postman or curl (recommended for API testing):
+1. Login to obtain a bearer token:
+
+  POST http://localhost:5000/api/auth/login
+  Body: { "email": "hr@ims.com", "password": "Hr@12345" }
+
+2. Use the returned `accessToken` as `Authorization: Bearer <token>` to call protected endpoints:
+
+  POST /api/completion/:internId/complete
+  POST /api/certificates/:internId/generate
+  GET  /api/certificates
+
+3. Public verification (no auth):
+  GET /api/certificates/verify/:certificateId
+
+Where to look for outputs and files
+----------------------------------
+- Generated certificate PDFs are stored under `/uploads` and served statically at `/uploads/<filename>`.
+- Database records are in MongoDB: `certificates`, `completions`, `alumnis`, `settings` collections.
+
+Branch and commits
+------------------
+- Branch: `feature/certificates-alumni`
+- Commit example: `feat(certificates/alumni): add completion rules, certificate verification, alumni snapshot`
+
+Next steps you can ask me to do
+-------------------------------
+- Add client UI components: "Mark as Complete" on `InternProfile`, certificate list/generation UI, and a public verification page.
+- Add certificate revocation endpoint (`PATCH /api/certificates/:id/revoke`) and UI.
+- Add automated Jest tests for controllers.
+- Add an admin Settings page to edit `completionRules` stored in `Setting`.
+
+Contact
+-------
+If you want I can: implement the client UI next, or push the branch and open a PR for review.

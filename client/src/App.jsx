@@ -7,6 +7,7 @@ import { Login } from './pages/auth/Login';
 import { SignUp } from './pages/auth/SignUp';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
 import { ResetPassword } from './pages/auth/ResetPassword';
+import { VerifyCertificate } from './pages/certificates/VerifyCertificate';
 
 import { Dashboard } from './pages/dashboard/Dashboard';
 import { InternList } from './pages/interns/InternList';
@@ -39,6 +40,10 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Route>
+
+      {/* Public certificate verification */}
+      <Route path="/certificates/verify" element={<VerifyCertificate />} />
+
 
       {/* Protected app routes - any authenticated role */}
       <Route element={<ProtectedRoute />}>

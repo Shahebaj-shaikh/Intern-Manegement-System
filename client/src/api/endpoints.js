@@ -94,7 +94,18 @@ export const documentApi = {
 // --- Certificates ---
 export const certificateApi = {
   list: () => api.get('/certificates'),
+my-new-feature
   generate: (internId, data) => api.post(`/certificates/${internId}/generate`, data),
+
+  generate: (internId, data) =>
+    api.post(`/certificates/${internId}/generate`, data),
+  verifyPublic: (certificateId) => api.get(`/certificates/verify/${certificateId}`),
+};
+
+// --- Completion ---
+export const completionApi = {
+  complete: (internId) => api.post(`/completion/${internId}/complete`),
+main
 };
 
 // --- Reports ---

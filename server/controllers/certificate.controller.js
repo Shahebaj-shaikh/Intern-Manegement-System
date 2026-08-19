@@ -71,4 +71,21 @@ const getCertificates = asyncHandler(async (req, res) => {
   res.json(new ApiResponse(200, certificates));
 });
 
-module.exports = { generateCertificate, getCertificates };
+// GET /api/certificates/verify/:certificateId (public)
+const verifyCertificate = asyncHandler(async (req, res) => {
+  const cert = await Certificate.findOne({ certificateId: req.params.certificateId }).populate('intern', 'fullName');
+  if (!cert) return res.status(404).json(new ApiResponse(404, null, 'Certificate not found'));
+
+  const publicData = {
+    certificateId: cert.certificateId,
+    internName: cert.intern?.fullName || null,
+    role: cert.role,
+    durationText: cert.durationText,
+    issueDate: cert.issueDate,
+    status: cert.status,
+  };
+
+  res.json(new ApiResponse(200, publicData, 'Certificate verification result'));
+});
+
+module.exports = { generateCertificate, getCertificates, verifyCertificate };
