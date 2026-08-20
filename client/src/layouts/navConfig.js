@@ -1,13 +1,34 @@
 import {
-  LayoutDashboard, Users, Briefcase, Building2, ListChecks, ClipboardList, CalendarCheck,
-  CalendarClock, Award, Bell, Megaphone, FileText, ScrollText, BarChart3, History, User,
-  UserPlus, ClipboardList,
+  LayoutDashboard,
+  Users,
+  Briefcase,
+  Building2,
+  ListChecks,
+  ClipboardList,
+  CalendarCheck,
+  CalendarClock,
+  Award,
+  Bell,
+  Megaphone,
+  FileText,
+  ScrollText,
+  BarChart3,
+  History,
+  User,
+  UserPlus,
+  FileSignature,
+  ClipboardCheck,
 } from 'lucide-react';
 
 export const navByRole = {
   super_admin: [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/interns', label: 'Interns', icon: Users },
+
+    // Offer & Onboarding
+    { to: '/offers', label: 'Offers', icon: FileSignature },
+    { to: '/onboarding', label: 'Onboarding', icon: ClipboardCheck },
+
     { to: '/employees', label: 'Employees', icon: Briefcase },
     { to: '/departments', label: 'Departments', icon: Building2 },
     { to: '/candidates', label: 'Candidates', icon: UserPlus },
@@ -23,9 +44,15 @@ export const navByRole = {
     { to: '/reports', label: 'Reports', icon: BarChart3 },
     { to: '/audit-logs', label: 'Audit Logs', icon: History },
   ],
+
   hr: [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/interns', label: 'Interns', icon: Users },
+
+    // Offer & Onboarding
+    { to: '/offers', label: 'Offers', icon: FileSignature },
+    { to: '/onboarding', label: 'Onboarding', icon: ClipboardCheck },
+
     { to: '/employees', label: 'Employees', icon: Briefcase },
     { to: '/departments', label: 'Departments', icon: Building2 },
     { to: '/candidates', label: 'Candidates', icon: UserPlus },
@@ -41,6 +68,7 @@ export const navByRole = {
     { to: '/reports', label: 'Reports', icon: BarChart3 },
     { to: '/audit-logs', label: 'Audit Logs', icon: History },
   ],
+
   team_lead: [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/interns', label: 'My Interns', icon: Users },
@@ -51,8 +79,14 @@ export const navByRole = {
     { to: '/performance', label: 'Performance', icon: Award },
     { to: '/announcements', label: 'Announcements', icon: Megaphone },
   ],
+
   intern: [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+
+    // Offer & Onboarding
+    { to: '/offers', label: 'My Offers', icon: FileSignature },
+    { to: '/onboarding', label: 'My Onboarding', icon: ClipboardCheck },
+
     { to: '/tasks', label: 'My Tasks', icon: ListChecks },
     { to: '/worklogs', label: 'Work Logs', icon: ClipboardList },
     { to: '/attendance', label: 'Attendance', icon: CalendarCheck },

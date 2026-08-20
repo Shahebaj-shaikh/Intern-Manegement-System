@@ -44,6 +44,8 @@ app.use('/api/performance', require('./routes/performance.routes'));
 app.use('/api/notifications', require('./routes/notification.routes'));
 app.use('/api/announcements', require('./routes/announcement.routes'));
 app.use('/api/documents', require('./routes/document.routes'));
+app.use('/api/offers', require('./routes/offer.routes'));
+app.use('/api/onboarding', require('./routes/onboarding.routes'));
 app.use('/api/certificates', require('./routes/certificate.routes'));
 app.use('/api/completion', require('./routes/completion.routes'));
 app.use('/api/alumni', require('./routes/alumni.routes'));

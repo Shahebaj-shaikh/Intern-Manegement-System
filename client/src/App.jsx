@@ -32,6 +32,8 @@ import { CertificatesPage } from './pages/certificates/CertificatesPage';
 import { ReportsPage } from './pages/reports/ReportsPage';
 import { AuditLogsPage } from './pages/auditlogs/AuditLogsPage';
 import { ProfilePage } from './pages/profile/ProfilePage';
+import { OffersPage } from './pages/offers/OffersPage';
+import { OnboardingPage } from './pages/onboarding/OnboardingPage';
 import { NotFound } from './pages/misc/NotFound';
 import {AdminAttendancePage} from './pages/attendance/AdminAttendancePage';
 
@@ -65,6 +67,9 @@ function App() {
           <Route path="/performance" element={<PerformancePage />} />
           <Route path="/announcements" element={<AnnouncementsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+
+          <Route path="/offers" element={<OffersPage />} />
+          <Route path="/onboarding" element={<OnboardingPage />} />
 
           {/* HR / Admin / Team Lead only */}
           <Route element={<ProtectedRoute roles={['super_admin', 'hr', 'team_lead']} />}>
