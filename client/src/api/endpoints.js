@@ -181,3 +181,27 @@ export const applicationApi = {
   update: (id, data) => api.put(`/applications/${id}`, data),
   updateStatus: (id, data) => api.put(`/applications/${id}/status`, data),
 };
+// --- Offers ---
+export const offerApi = {
+  list: (params) => api.get('/offers', { params }),
+  get: (id) => api.get(`/offers/${id}`),
+  create: (data) => api.post('/offers', data),
+  update: (id, data) => api.put(`/offers/${id}`, data),
+  send: (id) => api.put(`/offers/${id}/send`),
+  withdraw: (id) => api.put(`/offers/${id}/withdraw`),
+  accept: (id) => api.put(`/offers/${id}/accept`),
+  reject: (id, rejectionReason) =>
+    api.put(`/offers/${id}/reject`, {
+      rejectionReason,
+    }),
+};
+
+// --- Onboarding ---
+export const onboardingApi = {
+  list: (params) => api.get('/onboarding', { params }),
+  get: (id) => api.get(`/onboarding/${id}`),
+  progress: (id) => api.get(`/onboarding/${id}/progress`),
+  update: (id, data) => api.put(`/onboarding/${id}`, data),
+  start: (id) => api.put(`/onboarding/${id}/start`),
+  complete: (id) => api.put(`/onboarding/${id}/complete`),
+};
