@@ -7,9 +7,12 @@ const Intern = require('../models/Intern');
 const logAction = require('../utils/auditLogger');
 const { notify } = require('../services/notification.service');
 
-// GET /api/tasks?status=&priority=&assignedTo=&deadlineBefore=
+const OPEN_STATUSES = ['not_started', 'in_progress', 'submitted', 'under_review', 'rejected'];
+const INTERN_MOVE_STATUSES = ['not_started', 'in_progress'];
+
+// GET /api/tasks?status=&priority=&assignedTo=&search=&overdue=
 const getTasks = asyncHandler(async (req, res) => {
-  const { status, priority, assignedTo, search, page = 1, limit = 20 } = req.query;
+  const { status, priority, assignedTo, search, overdue, page = 1, limit = 20 } = req.query;
   const filter = {};
 
   if (req.user.role === 'intern') {
@@ -21,6 +24,12 @@ const getTasks = asyncHandler(async (req, res) => {
   if (status) filter.status = status;
   if (priority) filter.priority = priority;
   if (search) filter.title = { $regex: search, $options: 'i' };
+  if (overdue === 'true') {
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    filter.deadline = { $lt: startOfToday };
+    if (!status) filter.status = { $in: OPEN_STATUSES };
+  }
 
   const skip = (Number(page) - 1) * Number(limit);
   const [tasks, total] = await Promise.all([
@@ -86,6 +95,15 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
 
   const task = await Task.findById(req.params.id).populate('createdBy', 'fullName user');
   if (!task) throw new ApiError(404, 'Task not found');
+
+  if (req.user.role === 'intern') {
+    if (String(task.assignedTo) !== String(req.user.profileRef)) {
+      throw new ApiError(403, 'You can only update tasks assigned to you.');
+    }
+    if (!INTERN_MOVE_STATUSES.includes(task.status) || !INTERN_MOVE_STATUSES.includes(status)) {
+      throw new ApiError(400, 'Interns can only move tasks between To Do and In Progress. Submit work from the task page.');
+    }
+  }
 
   task.status = status;
   await task.save();

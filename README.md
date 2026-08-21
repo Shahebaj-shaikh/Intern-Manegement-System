@@ -197,3 +197,7 @@ This build is fully wired end-to-end: real MongoDB models, real JWT auth, real R
 ---
 
 Built following the phased architecture: schemas → auth → core management → tasks → attendance/leave → performance → notifications/announcements → documents/certificates → dashboards/reports → hardening.
+
+## 13. Module: Candidate Intake & Selection
+
+A recruitment pipeline (`Candidate → Application → Selection`) was added on the `feature/candidate-selection` branch, feeding the existing Intern module without modifying it. See **[CANDIDATE_SELECTION.md](./CANDIDATE_SELECTION.md)** for the full module documentation: data model, API reference, frontend routes, and testing instructions.

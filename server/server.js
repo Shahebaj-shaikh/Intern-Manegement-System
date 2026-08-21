@@ -37,6 +37,7 @@ app.use('/api/manager-assignments', require('./routes/managerAssignment.routes')
 app.use('/api/employees', require('./routes/employee.routes'));
 app.use('/api/departments', require('./routes/department.routes'));
 app.use('/api/tasks', require('./routes/task.routes'));
+app.use('/api/worklogs', require('./routes/workLog.routes'));
 app.use('/api/attendance', require('./routes/attendance.routes'));
 app.use('/api/leaves', require('./routes/leave.routes'));
 app.use('/api/performance', require('./routes/performance.routes'));
@@ -44,7 +45,11 @@ app.use('/api/final-evaluations', require('./routes/finalEvaluation.routes'));
 app.use('/api/notifications', require('./routes/notification.routes'));
 app.use('/api/announcements', require('./routes/announcement.routes'));
 app.use('/api/documents', require('./routes/document.routes'));
+app.use('/api/offers', require('./routes/offer.routes'));
+app.use('/api/onboarding', require('./routes/onboarding.routes'));
 app.use('/api/certificates', require('./routes/certificate.routes'));
+app.use('/api/completion', require('./routes/completion.routes'));
+app.use('/api/alumni', require('./routes/alumni.routes'));
 app.use('/api/reports', require('./routes/report.routes'));
 app.use('/api/audit-logs', require('./routes/auditlog.routes'));
 app.use(
@@ -52,6 +57,8 @@ app.use(
   require('./routes/finalEvaluation.routes')
 );
 app.use('/api/dashboard', require('./routes/dashboard.routes'));
+app.use('/api/candidates', require('./routes/candidate.routes'));
+app.use('/api/applications', require('./routes/application.routes'));
 
 app.use(notFound);
 app.use(errorHandler);

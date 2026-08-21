@@ -1,4 +1,17 @@
-require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+// Ensure the MONGODB_URI from server/.env is used even if an environment variable is already set
+const fs = require('fs');
+try {
+  const envPath = path.join(__dirname, '..', '.env');
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    const m = envContent.match(/^MONGODB_URI=(.*)$/m);
+    if (m && m[1]) process.env.MONGODB_URI = m[1].trim();
+  }
+} catch (e) {
+  // ignore and rely on dotenv
+}
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
@@ -10,8 +23,13 @@ const Task = require('../models/Task');
 const Attendance = require('../models/Attendance');
 const Leave = require('../models/Leave');
 const Performance = require('../models/Performance');
+const EvaluationTemplate = require('../models/EvaluationTemplate');
+const EvaluationCategory = require('../models/EvaluationCategory');
+const Feedback = require('../models/Feedback');
 const Announcement = require('../models/Announcement');
 const Notification = require('../models/Notification');
+const Candidate = require('../models/Candidate');
+const Application = require('../models/Application');
 
 const DEPARTMENTS = ['Software Development', 'Web Development', 'Mobile Development', 'HR', 'Marketing', 'QA', 'UI/UX', 'Data/AI'];
 
@@ -22,7 +40,9 @@ const run = async () => {
   await Promise.all([
     User.deleteMany({}), Employee.deleteMany({}), Intern.deleteMany({}), Department.deleteMany({}),
     Task.deleteMany({}), Attendance.deleteMany({}), Leave.deleteMany({}), Performance.deleteMany({}),
+    EvaluationTemplate.deleteMany({}), EvaluationCategory.deleteMany({}), Feedback.deleteMany({}),
     Announcement.deleteMany({}), Notification.deleteMany({}),
+    Candidate.deleteMany({}), Application.deleteMany({}),
   ]);
 
   const departments = await Department.insertMany(DEPARTMENTS.map((name) => ({ name, description: `${name} department` })));
@@ -48,6 +68,27 @@ const run = async () => {
   const tlUser2 = await User.create({ email: 'weblead@ims.com', password: hash('Lead@123'), role: 'team_lead' });
   const tl2 = await Employee.create({ user: tlUser2._id, email: 'weblead@ims.com', fullName: 'Ananya Iyer', designation: 'Lead Web Developer', department: deptMap['Web Development'] });
   tlUser2.profileRef = tl2._id; tlUser2.profileModel = 'Employee'; await tlUser2.save();
+
+  // --- Evaluation Templates & Categories ---
+  const defaultCategories = [
+    { name: 'Technical Skills', description: 'Proficiency in required programming languages and frameworks', minScore: 1, maxScore: 10, weight: 1.5, order: 1 },
+    { name: 'Communication', description: 'Clarity in written and verbal communication, team interaction', minScore: 1, maxScore: 10, weight: 1, order: 2 },
+    { name: 'Problem Solving', description: 'Ability to debug, analyze issues, and propose sound solutions', minScore: 1, maxScore: 10, weight: 1.2, order: 3 },
+    { name: 'Discipline & Punctuality', description: 'Adherence to work hours, meetings, and workplace decorum', minScore: 1, maxScore: 10, weight: 0.8, order: 4 },
+    { name: 'Task Completion', description: 'Timeliness and quality of submitted deliverables', minScore: 1, maxScore: 10, weight: 1.3, order: 5 },
+    { name: 'Learning Ability', description: 'Speed of picking up new technologies and incorporating feedback', minScore: 1, maxScore: 10, weight: 1.1, order: 6 },
+    { name: 'Professionalism', description: 'Work ethic, accountability, and collaboration with colleagues', minScore: 1, maxScore: 10, weight: 1, order: 7 },
+  ];
+
+  await EvaluationCategory.insertMany(defaultCategories);
+
+  const standardTemplate = await EvaluationTemplate.create({
+    name: 'Standard Internship Mid-Term Evaluation',
+    description: 'Comprehensive rubric covering technical, soft skills, discipline, and deliverable quality.',
+    isDefault: true,
+    createdBy: adminUser._id,
+    categories: defaultCategories,
+  });
 
   // --- Interns ---
   const internSeeds = [
@@ -108,17 +149,126 @@ const run = async () => {
   await Leave.create({ intern: interns[0]._id, leaveType: 'sick', startDate: new Date('2026-08-20'), endDate: new Date('2026-08-21'), reason: 'Fever', status: 'pending' });
   await Leave.create({ intern: interns[1]._id, leaveType: 'casual', startDate: new Date('2026-08-10'), endDate: new Date('2026-08-10'), reason: 'Personal work', status: 'approved', reviewedBy: tl2._id });
 
-  // --- Performance ---
+  // --- Feedback ---
+  await Feedback.create({
+    intern: interns[0]._id,
+    author: tlUser1._id,
+    category: 'Technical',
+    strengths: 'Quick grasp of backend API design and MongoDB schemas.',
+    weaknesses: 'Needs deeper attention to edge cases in error handling.',
+    improvementSuggestions: 'Write more unit tests covering boundary conditions.',
+    comments: 'Great progress in the first month. Demonstrates high enthusiasm and quick learning.',
+  });
+
+  await Feedback.create({
+    intern: interns[0]._id,
+    author: hrUser._id,
+    category: 'General',
+    strengths: 'Very punctual and active participant in team standups.',
+    weaknesses: 'None observed.',
+    improvementSuggestions: 'Continue maintaining good communication with mentors.',
+    comments: 'Smooth onboarding and high engagement.',
+  });
+
+  // --- Mid-Term Evaluations ---
+  const sampleScores = [
+    { categoryName: 'Technical Skills', score: 8.5, maxScore: 10, weight: 1.5, notes: 'Solid understanding of Node/Express' },
+    { categoryName: 'Communication', score: 8.0, maxScore: 10, weight: 1, notes: 'Clear daily updates' },
+    { categoryName: 'Problem Solving', score: 8.5, maxScore: 10, weight: 1.2, notes: 'Good analytical breakdown' },
+    { categoryName: 'Discipline & Punctuality', score: 9.0, maxScore: 10, weight: 0.8, notes: 'Always on time' },
+    { categoryName: 'Task Completion', score: 7.5, maxScore: 10, weight: 1.3, notes: 'Delivers on schedule with minor revisions' },
+    { categoryName: 'Learning Ability', score: 9.0, maxScore: 10, weight: 1.1, notes: 'Learns rapidly' },
+    { categoryName: 'Professionalism', score: 8.5, maxScore: 10, weight: 1, notes: 'Courteous and team-oriented' },
+  ];
+
   await Performance.create({
-    intern: interns[0]._id, evaluatedBy: tl1._id,
-    ratings: { technicalSkills: 8, taskCompletion: 7, problemSolving: 8, communication: 7, teamwork: 9, punctuality: 8, learningAbility: 9, professionalism: 8 },
-    feedback: 'Strong technical performance, great attitude towards learning.',
-    evaluationPeriod: 'Month 1',
+    intern: interns[0]._id,
+    evaluator: tlUser1._id,
+    evaluatedBy: tl1._id,
+    template: standardTemplate._id,
+    evaluationPeriod: 'Mid-Term',
+    categoryScores: sampleScores,
+    strengths: 'Strong analytical skills, fast learner, and great team player.',
+    weaknesses: 'Can improve on test coverage and code documentation.',
+    improvementPlan: 'Assign dedicated tasks focusing on automated testing and architecture documentation.',
+    overallRecommendation: 'excellent',
+    status: 'finalized',
+    finalizedAt: new Date(),
+    finalizedBy: hrUser._id,
+    version: 1,
+    versionHistory: [
+      {
+        version: 1,
+        modifiedBy: tlUser1._id,
+        modifiedAt: new Date(),
+        status: 'finalized',
+        overallScore: 8.4,
+        categoryScores: sampleScores,
+        strengths: 'Strong analytical skills, fast learner, and great team player.',
+        weaknesses: 'Can improve on test coverage and code documentation.',
+        improvementPlan: 'Assign dedicated tasks focusing on automated testing and architecture documentation.',
+        overallRecommendation: 'excellent',
+        changeSummary: 'Finalized mid-term evaluation',
+      },
+    ],
   });
 
   // --- Announcements ---
   await Announcement.create({ title: 'Welcome to the Summer Internship Program!', description: 'We are excited to have all interns onboard. Please check your tasks and complete profile setup.', createdBy: hrEmployee._id, targetAudience: 'interns', priority: 'high' });
   await Announcement.create({ title: 'Office Wi-Fi Maintenance', description: 'Wi-Fi will be down for maintenance this Saturday from 10 PM to 2 AM.', createdBy: adminEmployee._id, targetAudience: 'all', priority: 'medium' });
+
+  // --- Candidates & Applications (recruitment pipeline demo data) ---
+  const candidateSeeds = [
+    { fullName: 'Meera Nair', email: 'meera.nair@example.com', source: 'campus', degree: 'B.Tech', institution: 'NIT Surathkal', skills: ['React', 'JavaScript', 'CSS'], dept: 'Web Development', status: 'applied' },
+    { fullName: 'Arjun Malhotra', email: 'arjun.malhotra@example.com', source: 'linkedin', degree: 'B.E', institution: 'PES University', skills: ['Node.js', 'MongoDB', 'Express'], dept: 'Software Development', status: 'shortlisted' },
+    { fullName: 'Divya Krishnan', email: 'divya.krishnan@example.com', source: 'referral', degree: 'B.Tech', institution: 'IIIT Hyderabad', skills: ['Python', 'Machine Learning'], dept: 'Data/AI', status: 'interview' },
+    { fullName: 'Karan Bhatia', email: 'karan.bhatia@example.com', source: 'job_portal', degree: 'BCA', institution: 'Christ University', skills: ['Figma', 'UI Design'], dept: 'UI/UX', status: 'selected' },
+    { fullName: 'Fatima Sheikh', email: 'fatima.sheikh@example.com', source: 'campus', degree: 'B.Tech', institution: 'Jamia Millia Islamia', skills: ['Manual Testing', 'Selenium'], dept: 'QA', status: 'rejected' },
+  ];
+
+  const stageOrder = ['applied', 'shortlisted', 'interview', 'selected', 'rejected'];
+
+  for (const s of candidateSeeds) {
+    const candidate = await Candidate.create({
+      fullName: s.fullName,
+      email: s.email,
+      phone: '+91 90000 00000',
+      source: s.source,
+      education: { degree: s.degree, institution: s.institution, graduationYear: 2026 },
+      skills: s.skills,
+      profileSummary: `${s.fullName.split(' ')[0]} is a motivated candidate with hands-on experience in ${s.skills[0]}.`,
+      createdBy: hrEmployee._id,
+    });
+
+    const targetIndex = stageOrder.indexOf(s.status);
+    // Build a realistic status history leading up to the candidate's current stage
+    // (rejections can happen from any stage, so walk forward then reject if needed)
+    const historyStages = s.status === 'rejected'
+      ? ['applied', 'shortlisted', 'rejected']
+      : stageOrder.slice(0, targetIndex + 1);
+
+    const statusHistory = historyStages.map((stage, idx) => ({
+      status: stage,
+      changedBy: hrEmployee._id,
+      changedByName: 'hr@ims.com',
+      note: stage === 'applied' ? 'Application created' : `Moved to ${stage}`,
+      changedAt: new Date(Date.now() - (historyStages.length - idx) * 86400000),
+    }));
+
+    const finalStatus = s.status === 'rejected' ? 'rejected' : s.status;
+
+    await Application.create({
+      candidate: candidate._id,
+      department: deptMap[s.dept],
+      positionTitle: `${s.dept} Intern`,
+      status: finalStatus,
+      statusHistory,
+      decision: ['selected', 'rejected'].includes(finalStatus) ? finalStatus : undefined,
+      decisionAt: ['selected', 'rejected'].includes(finalStatus) ? new Date() : undefined,
+      decisionBy: ['selected', 'rejected'].includes(finalStatus) ? hrEmployee._id : undefined,
+      createdBy: hrEmployee._id,
+    });
+  }
 
   console.log('\n✅ Seed complete!\n');
   console.log('Demo credentials:');
@@ -128,6 +278,7 @@ const run = async () => {
   console.log('  Team Lead 2 : weblead@ims.com / Lead@123');
   console.log('  Intern      : intern@ims.com / Intern@123');
   console.log('  (more interns: intern2..intern5@ims.com / Intern@123)\n');
+  console.log('  Candidates & applications seeded across all pipeline stages (see /candidates and /applications)\n');
 
   await mongoose.disconnect();
   process.exit(0);
