@@ -1,4 +1,5 @@
 import {
+import {
   LayoutDashboard,
   Users,
   Briefcase,
@@ -16,9 +17,11 @@ import {
   History,
   User,
   UserPlus,
+  UserMinus,
   FileSignature,
   ClipboardCheck,
 } from 'lucide-react';
+
 
 export const navByRole = {
   super_admin: [
@@ -43,6 +46,7 @@ export const navByRole = {
     { to: '/certificates', label: 'Certificates', icon: ScrollText },
     { to: '/reports', label: 'Reports', icon: BarChart3 },
     { to: '/audit-logs', label: 'Audit Logs', icon: History },
+    { to: '/offboarding', label: 'Offboarding', icon: UserMinus },
   ],
 
   hr: [
@@ -67,6 +71,7 @@ export const navByRole = {
     { to: '/certificates', label: 'Certificates', icon: ScrollText },
     { to: '/reports', label: 'Reports', icon: BarChart3 },
     { to: '/audit-logs', label: 'Audit Logs', icon: History },
+    { to: '/offboarding', label: 'Offboarding', icon: UserMinus },
   ],
 
   team_lead: [
@@ -78,6 +83,7 @@ export const navByRole = {
     { to: '/leaves', label: 'Leave Requests', icon: CalendarClock },
     { to: '/performance', label: 'Performance', icon: Award },
     { to: '/announcements', label: 'Announcements', icon: Megaphone },
+    { to: '/offboarding', label: 'Offboarding', icon: UserMinus },
   ],
 
   intern: [

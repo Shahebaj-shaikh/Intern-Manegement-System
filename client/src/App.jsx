@@ -1,3 +1,4 @@
+import FinalEvaluation from './pages/offboarding/FinalEvaluation';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './routes/ProtectedRoute';
 import { AuthLayout } from './layouts/AuthLayout';
@@ -67,6 +68,7 @@ function App() {
           <Route path="/performance" element={<PerformancePage />} />
           <Route path="/announcements" element={<AnnouncementsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+	  <Route path="/offboarding" element={<FinalEvaluation />} />
 
           <Route path="/offers" element={<OffersPage />} />
           <Route path="/onboarding" element={<OnboardingPage />} />
