@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../../api/axios";
 
 const FinalEvaluation = () => {
+  const [interns, setInterns] = useState([]);
+  const [loadingInterns, setLoadingInterns] = useState(true);
+  const [loading, setLoading] = useState(false);
+
   const [form, setForm] = useState({
     intern: "",
     outcome: "",
@@ -9,7 +13,25 @@ const FinalEvaluation = () => {
     comments: "",
   });
 
-  const [loading, setLoading] = useState(false);
+  // Fetch interns
+  useEffect(() => {
+    const fetchInterns = async () => {
+      try {
+        const response = await api.get("/interns");
+
+        setInterns(response.data.data.interns || []);
+      } catch (error) {
+        console.error("Failed to fetch interns:", error);
+        alert(
+          error.response?.data?.message || "Failed to load interns"
+        );
+      } finally {
+        setLoadingInterns(false);
+      }
+    };
+
+    fetchInterns();
+  }, []);
 
   const handleChange = (e) => {
     setForm({
@@ -20,10 +42,18 @@ const FinalEvaluation = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!form.intern) {
+      alert("Please select an intern");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await api.post("/final-evaluations", form);
+      const response = await api.post("/final-evaluations", form);
+
+      console.log("Final evaluation:", response.data);
 
       alert("Final evaluation submitted successfully!");
 
@@ -59,24 +89,37 @@ const FinalEvaluation = () => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
 
+          {/* Intern */}
           <div>
-            <label className="mb-2 block font-medium">
-              Intern ID
+            <label className="mb-2 block font-medium text-gray-700">
+              Select Intern
             </label>
 
-            <input
-              type="text"
+            <select
               name="intern"
               value={form.intern}
               onChange={handleChange}
               required
-              placeholder="Enter intern MongoDB ID"
-              className="w-full rounded-lg border p-3"
-            />
+              disabled={loadingInterns}
+              className="w-full rounded-lg border border-gray-300 p-3"
+            >
+              <option value="">
+                {loadingInterns
+                  ? "Loading interns..."
+                  : "Select an intern"}
+              </option>
+
+              {interns.map((intern) => (
+                <option key={intern._id} value={intern._id}>
+                  {intern.fullName} ({intern.email})
+                </option>
+              ))}
+            </select>
           </div>
 
+          {/* Outcome */}
           <div>
-            <label className="mb-2 block font-medium">
+            <label className="mb-2 block font-medium text-gray-700">
               Final Outcome
             </label>
 
@@ -85,23 +128,27 @@ const FinalEvaluation = () => {
               value={form.outcome}
               onChange={handleChange}
               required
-              className="w-full rounded-lg border p-3"
+              className="w-full rounded-lg border border-gray-300 p-3"
             >
               <option value="">Select outcome</option>
+
               <option value="COMPLETED">
                 Internship Completed
               </option>
+
               <option value="EXTENDED">
                 Internship Extended
               </option>
+
               <option value="TERMINATED">
                 Internship Terminated
               </option>
             </select>
           </div>
 
+          {/* Feedback */}
           <div>
-            <label className="mb-2 block font-medium">
+            <label className="mb-2 block font-medium text-gray-700">
               Feedback Summary
             </label>
 
@@ -109,14 +156,15 @@ const FinalEvaluation = () => {
               name="feedbackSummary"
               value={form.feedbackSummary}
               onChange={handleChange}
-              rows="4"
+              rows={4}
               placeholder="Enter final feedback summary..."
-              className="w-full rounded-lg border p-3"
+              className="w-full rounded-lg border border-gray-300 p-3"
             />
           </div>
 
+          {/* Comments */}
           <div>
-            <label className="mb-2 block font-medium">
+            <label className="mb-2 block font-medium text-gray-700">
               Comments
             </label>
 
@@ -124,18 +172,21 @@ const FinalEvaluation = () => {
               name="comments"
               value={form.comments}
               onChange={handleChange}
-              rows="4"
+              rows={4}
               placeholder="Add any additional comments..."
-              className="w-full rounded-lg border p-3"
+              className="w-full rounded-lg border border-gray-300 p-3"
             />
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+            disabled={loading || loadingInterns}
+            className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading ? "Submitting..." : "Submit Final Evaluation"}
+            {loading
+              ? "Submitting..."
+              : "Submit Final Evaluation"}
           </button>
 
         </form>

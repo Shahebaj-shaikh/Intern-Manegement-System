@@ -1,7 +1,9 @@
 import {
-  LayoutDashboard, Users, Briefcase, Building2, ListChecks, CalendarCheck,
-  CalendarClock, Award, Bell, Megaphone, FileText, ScrollText, BarChart3, History, User,
+	LayoutDashboard, Users, Briefcase, Building2, ListChecks, CalendarCheck,
+        CalendarClock, Award, Bell, Megaphone, FileText, ScrollText, BarChart3, History, User, UserMinus,
+  
 } from 'lucide-react';
+
 
 export const navByRole = {
   super_admin: [
@@ -18,6 +20,7 @@ export const navByRole = {
     { to: '/certificates', label: 'Certificates', icon: ScrollText },
     { to: '/reports', label: 'Reports', icon: BarChart3 },
     { to: '/audit-logs', label: 'Audit Logs', icon: History },
+    { to: '/offboarding', label: 'Offboarding', icon: UserMinus },
   ],
   hr: [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -33,6 +36,7 @@ export const navByRole = {
     { to: '/certificates', label: 'Certificates', icon: ScrollText },
     { to: '/reports', label: 'Reports', icon: BarChart3 },
     { to: '/audit-logs', label: 'Audit Logs', icon: History },
+    { to: '/offboarding', label: 'Offboarding', icon: UserMinus },
   ],
   team_lead: [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -42,6 +46,7 @@ export const navByRole = {
     { to: '/leaves', label: 'Leave Requests', icon: CalendarClock },
     { to: '/performance', label: 'Performance', icon: Award },
     { to: '/announcements', label: 'Announcements', icon: Megaphone },
+    { to: '/offboarding', label: 'Offboarding', icon: UserMinus },
   ],
   intern: [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
