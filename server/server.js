@@ -41,6 +41,7 @@ app.use('/api/worklogs', require('./routes/workLog.routes'));
 app.use('/api/attendance', require('./routes/attendance.routes'));
 app.use('/api/leaves', require('./routes/leave.routes'));
 app.use('/api/performance', require('./routes/performance.routes'));
+app.use('/api/final-evaluations', require('./routes/finalEvaluation.routes'));
 app.use('/api/notifications', require('./routes/notification.routes'));
 app.use('/api/announcements', require('./routes/announcement.routes'));
 app.use('/api/documents', require('./routes/document.routes'));
@@ -51,6 +52,10 @@ app.use('/api/completion', require('./routes/completion.routes'));
 app.use('/api/alumni', require('./routes/alumni.routes'));
 app.use('/api/reports', require('./routes/report.routes'));
 app.use('/api/audit-logs', require('./routes/auditlog.routes'));
+app.use(
+  '/api/final-evaluations',
+  require('./routes/finalEvaluation.routes')
+);
 app.use('/api/dashboard', require('./routes/dashboard.routes'));
 app.use('/api/candidates', require('./routes/candidate.routes'));
 app.use('/api/applications', require('./routes/application.routes'));
