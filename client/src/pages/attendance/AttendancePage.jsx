@@ -75,20 +75,20 @@ export function AttendancePage() {
   const [correctionForm, setCorrectionForm] = useState({ checkIn: '', checkOut: '', reason: '' });
 
   // 🛠️ Developer Testing Reset Handler (Independent Top Level)
-  const handleDevReset = async () => {
-    try {
-      const res = await axios.delete('/attendance/reset-today');
-      alert('Database Cleared! You can now test Check-In again. 🔄');
+  // const handleDevReset = async () => {
+  //   try {
+  //     const res = await axios.delete('/attendance/reset-today');
+  //     alert('Database Cleared! You can now test Check-In again. 🔄');
       
-      setIsCheckedIn(false);
-      setTodayRecord(null);
+  //     setIsCheckedIn(false);
+  //     setTodayRecord(null);
       
-      await fetchAttendance(); // Fetch fresh data from backend
-    } catch (err) {
-      console.error('Reset Error:', err.response?.data || err);
-      alert(err.response?.data?.message || 'Failed to reset attendance in database.');
-    }
-  };
+  //     await fetchAttendance(); // Fetch fresh data from backend
+  //   } catch (err) {
+  //     console.error('Reset Error:', err.response?.data || err);
+  //     alert(err.response?.data?.message || 'Failed to reset attendance in database.');
+  //   }
+  // };
 
   // 📡 Fetch Attendance Data & Auto-Detect Check-In Status
   const fetchAttendance = async () => {
@@ -237,15 +237,7 @@ export function AttendancePage() {
   return (
     <div className="p-6 space-y-6 bg-slate-50 min-h-screen font-sans">
       
-      {/* Dev Reset Button */}
-      {import.meta.env.DEV && (
-        <button 
-          onClick={handleDevReset}
-          className="px-3 py-1.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium rounded-lg hover:bg-rose-100 transition flex items-center gap-1 shadow-sm"
-        >
-          <span>🔄</span> Dev Reset
-        </button>
-      )}
+      
 
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
